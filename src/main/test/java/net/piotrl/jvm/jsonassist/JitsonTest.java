@@ -1,6 +1,7 @@
 package net.piotrl.jvm.jsonassist;
 
 import junit.framework.TestCase;
+import net.piotrl.jvm.jsonassist.generation.Jitson;
 import net.piotrl.jvm.jsonassist.mock.CollectionPrimitives;
 import net.piotrl.jvm.jsonassist.mock.NestedObject;
 import net.piotrl.jvm.jsonassist.mock.PlainPrimitives;

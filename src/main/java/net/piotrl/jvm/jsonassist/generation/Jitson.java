@@ -1,18 +1,17 @@
-package net.piotrl.jvm.jsonassist;
+package net.piotrl.jvm.jsonassist.generation;
+
+import javassist.*;
+import net.piotrl.jvm.jsonassist.JsonStringifyFactory;
+import net.piotrl.jvm.jsonassist.json.JsonSyntaxBuilder;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import javassist.CannotCompileException;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtNewMethod;
-import javassist.NotFoundException;
 
 public class Jitson {
 
@@ -54,7 +53,7 @@ public class Jitson {
 		converterClass.addMethod(CtNewMethod.make(getConverterMethodBody(cls), converterClass));
 		converterClass.addMethod(CtNewMethod
 				.make("public String toJson(Object o){return toJson((" + cls.getName() + ")o);}", converterClass));
-		converterClass.setInterfaces(new CtClass[] { pool.get("net.piotrl.jvm.jsonassist.JsonConverter") });
+		converterClass.setInterfaces(new CtClass[] { pool.get("net.piotrl.jvm.jsonassist.generation.JsonConverter") });
 
 		JsonConverter result = (JsonConverter) pool.toClass(converterClass).newInstance();
 
@@ -70,17 +69,33 @@ public class Jitson {
 		// only public fields supported for now (no getter/setter support)
 		sb.append(Arrays.stream(cls.getDeclaredFields())
 				.map(field -> {
-					try {
-						return new PropertyDescriptor(field.getName(), cls);
-					} catch (IntrospectionException e) {
-						throw new RuntimeException(e);
-					}
+					PropertyDescriptor property = getPropertyDescriptor(cls, field);
+					return "\"" + property.getDisplayName() + "\\: \"+" + buildFieldValue(field, value(property));
 				})
-				.map(property -> "\"\\\"" + property.getDisplayName() + "\\\":\"+o." + property.getReadMethod().getName() + "()")
-				.collect(Collectors.joining("+\",\"+")));
+				.collect(Collectors.joining("+\", \"+")));
 
 		sb.append("+\"}\"; }");
 		return sb.toString();
 	}
 
+	private PropertyDescriptor getPropertyDescriptor(Class<?> cls, Field field) {
+		try {
+            return new PropertyDescriptor(field.getName(), cls);
+        } catch (IntrospectionException e) {
+            throw new RuntimeException(e);
+        }
+	}
+
+	private String value(PropertyDescriptor property) {
+		return "o." + property.getReadMethod().getName() + "()";
+	}
+
+	private String buildFieldValue(Field field, Object result) {
+		if (result == null) {
+			return JsonSyntaxBuilder.jsonNullValue();
+		}
+
+		return JsonStringifyFactory.factory(field)
+				.apply(result);
+	}
 }

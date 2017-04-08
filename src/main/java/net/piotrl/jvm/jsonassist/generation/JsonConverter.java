@@ -1,4 +1,4 @@
-package net.piotrl.jvm.jsonassist;
+package net.piotrl.jvm.jsonassist.generation;
 
 /**
  * Helper interface implemented automatically by Javaassist.

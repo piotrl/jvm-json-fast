@@ -5,10 +5,10 @@ import net.piotrl.jvm.jsonassist.json.JsonSyntaxBuilder;
 import java.lang.reflect.Field;
 import java.util.function.Function;
 
-enum JsonStringifyFactory {
+public enum JsonStringifyFactory {
     ;
 
-    static Function<Object, String> factory(Field field) {
+    public static Function<Object, String> factory(Field field) {
 
         if (BeanFieldUtils.isString(field)) {
             return JsonSyntaxBuilder::jsonStringValue;

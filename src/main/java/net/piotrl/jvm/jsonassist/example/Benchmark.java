@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import com.google.gson.Gson;
 
-import net.piotrl.jvm.jsonassist.Jitson;
+import net.piotrl.jvm.jsonassist.generation.Jitson;
 
 public class Benchmark {
 	public static void main(String[] args) throws Exception {

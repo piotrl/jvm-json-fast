@@ -33,6 +33,9 @@ public class Jitson {
 	 * @throws Exception
 	 */
 	public String toJson(Object o) {
+		if (o == null) {
+			return "null";
+		}
 		try {
 			// warning: this is not thread safe!
 			if (!cache.containsKey(o.getClass())) {

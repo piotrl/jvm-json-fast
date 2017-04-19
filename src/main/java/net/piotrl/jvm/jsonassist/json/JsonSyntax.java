@@ -3,10 +3,10 @@ package net.piotrl.jvm.jsonassist.json;
 public enum JsonSyntax {
     NULL("null"),
     STRING("\"\\\"\""), // "\""
-    ARRAY_START("["),
-    ARRAY_END("]"),
-    OBJECT_START("{"),
-    OBJECT_END("}");
+    ARRAY_START("\"[\""),
+    ARRAY_END("\"]\""),
+    OBJECT_START("\"{\""),
+    OBJECT_END("\"}\"");
 
     private String syntaxElement;
 

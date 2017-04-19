@@ -22,6 +22,14 @@ public enum BeanFieldUtils {
         return method.invoke(instance);
     }
 
+    public static PropertyDescriptor getPropertyDescriptor(Class<?> cls, Field field) {
+        try {
+            return new PropertyDescriptor(field.getName(), cls);
+        } catch (IntrospectionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // Source: http://stackoverflow.com/a/2638662/2757140
     public static Method buildGetter(Field field) throws IntrospectionException {
         Class<?> type = field.getDeclaringClass();

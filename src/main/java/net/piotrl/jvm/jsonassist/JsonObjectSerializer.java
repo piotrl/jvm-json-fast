@@ -3,26 +3,30 @@ package net.piotrl.jvm.jsonassist;
 import net.piotrl.jvm.jsonassist.json.JsonSyntaxBuilder;
 
 import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 
 public class JsonObjectSerializer {
 
-    public String serialize(Object value) {
+    public <T> String serialize(Class<T> value) {
         return JsonSyntaxBuilder.jsonObjectValue(fillFields(value));
     }
 
-    private String fillFields(Object src) {
-        Class<?> aClass = src.getClass();
+    private String fillFields(Class<?> cls) {
+        return Arrays.stream(cls.getDeclaredFields())
+                .map(field -> {
+                    PropertyDescriptor property = BeanFieldUtils.getPropertyDescriptor(cls, field);
+                    return "\"" + property.getDisplayName() + "\\: \"+" + buildFieldValue(field, value(property));
+                })
+                .collect(Collectors.joining("+\", \"+"));
+    }
 
-        List<Field> fields = Arrays.asList(aClass.getDeclaredFields());
-        return fields.stream()
-                .map(field -> field.getName() + ": " + stringFieldValue(field, src))
-                .collect(Collectors.joining(", "));
+    private String value(PropertyDescriptor property) {
+        return "o." + property.getReadMethod().getName() + "()";
     }
 
     private String stringFieldValue(Field field, Object src) {

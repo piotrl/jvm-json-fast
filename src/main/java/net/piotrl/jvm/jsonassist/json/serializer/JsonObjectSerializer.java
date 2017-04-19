@@ -1,5 +1,7 @@
-package net.piotrl.jvm.jsonassist;
+package net.piotrl.jvm.jsonassist.json.serializer;
 
+import net.piotrl.jvm.jsonassist.BeanFieldUtils;
+import net.piotrl.jvm.jsonassist.json.JsonStringifyFactory;
 import net.piotrl.jvm.jsonassist.json.JsonSyntaxBuilder;
 
 import java.beans.PropertyDescriptor;

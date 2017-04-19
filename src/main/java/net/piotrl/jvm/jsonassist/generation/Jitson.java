@@ -2,7 +2,7 @@ package net.piotrl.jvm.jsonassist.generation;
 
 import javassist.*;
 import net.piotrl.jvm.jsonassist.BeanFieldUtils;
-import net.piotrl.jvm.jsonassist.JsonStringifyFactory;
+import net.piotrl.jvm.jsonassist.json.JsonStringifyFactory;
 
 import java.util.Collection;
 import java.util.Map;

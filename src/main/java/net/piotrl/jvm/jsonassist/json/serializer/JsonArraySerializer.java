@@ -1,4 +1,4 @@
-package net.piotrl.jvm.jsonassist;
+package net.piotrl.jvm.jsonassist.json.serializer;
 
 import net.piotrl.jvm.jsonassist.json.JsonSyntaxBuilder;
 

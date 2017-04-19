@@ -1,6 +1,8 @@
-package net.piotrl.jvm.jsonassist;
+package net.piotrl.jvm.jsonassist.json;
 
-import net.piotrl.jvm.jsonassist.json.JsonSyntaxBuilder;
+import net.piotrl.jvm.jsonassist.BeanFieldUtils;
+import net.piotrl.jvm.jsonassist.json.serializer.JsonArraySerializer;
+import net.piotrl.jvm.jsonassist.json.serializer.JsonObjectSerializer;
 
 import java.lang.reflect.Field;
 import java.util.function.Function;

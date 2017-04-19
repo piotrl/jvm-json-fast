@@ -1,7 +1,7 @@
 package net.piotrl.jvm.jsonassist.generation;
 
 import javassist.*;
-import net.piotrl.jvm.jsonassist.JsonObjectSerializer;
+import net.piotrl.jvm.jsonassist.JsonStringifyFactory;
 
 import java.util.Map;
 import java.util.UUID;
@@ -69,7 +69,7 @@ public class Jitson {
                 .append(cls.getName())
                 .append(" o) {")
                 .append("return ")
-                .append(new JsonObjectSerializer().serialize(cls))
+                .append(JsonStringifyFactory.factory(cls).apply("o"))
                 .append("; }");
 
         System.out.println(sb.toString());

@@ -4,17 +4,20 @@ import net.piotrl.jvm.jsonassist.json.JsonSyntaxBuilder;
 
 import java.lang.reflect.Field;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public enum JsonStringifyFactory {
     ;
 
-    public static Function<Object, String> factory(Field field) {
-
+    public static Function<String, String> factory(Field field) {
         if (BeanFieldUtils.isString(field)) {
             return JsonSyntaxBuilder::jsonStringValue;
         }
         if (BeanFieldUtils.isObject(field)) {
-            return object -> nullSafe(object, new JsonObjectSerializer()::serialize);
+
+            return getter -> nullSafe(getter, () -> "" +
+                    "new net.piotrl.jvm.jsonassist.generation.Jitson()" +
+                    ".toJson(" + getter + ")");
         }
 //        if (BeanFieldUtils.isCollection(field)) {
 //            return object -> nullSafe((Collection) object, new JsonArraySerializer()::serialize);
@@ -22,27 +25,10 @@ public enum JsonStringifyFactory {
         return Object::toString;
     }
 
-    static <T> Function<T, String> factory(T objectToParse) {
-        if (objectToParse == null) {
-            return JsonSyntaxBuilder::jsonNullValue;
-        }
-        Class<?> type = objectToParse.getClass();
-        if (BeanFieldUtils.isNumber(type)) {
-            return Object::toString;
-        }
-        if (objectToParse instanceof String) {
-            return JsonSyntaxBuilder::jsonStringValue;
-        }
-//        if (objectToParse instanceof Collection) {
-//            return value -> new JsonArraySerializer().serialize((Collection) value);
-//        }
-        return value -> new JsonObjectSerializer().serialize(value);
-    }
-
-    static <T> String nullSafe(T value, Function<T, String> fallback) {
-        if (value == null) {
-            return JsonSyntaxBuilder.jsonNullValue();
-        }
-        return fallback.apply(value);
+    static String nullSafe(String getter, Supplier<String> converter) {
+        return "(" + getter + " != null" +
+                "? " + converter.get() +
+                ": " + JsonSyntaxBuilder.jsonNullValue() +
+                ")";
     }
 }

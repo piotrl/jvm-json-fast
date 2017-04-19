@@ -2,10 +2,7 @@ package net.piotrl.jvm.jsonassist.generation;
 
 import javassist.*;
 import net.piotrl.jvm.jsonassist.JsonObjectSerializer;
-import net.piotrl.jvm.jsonassist.JsonStringifyFactory;
-import net.piotrl.jvm.jsonassist.json.JsonSyntaxBuilder;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,14 +30,14 @@ public class Jitson {
 			return "null";
 		}
 		Class<?> type = o.getClass();
-		JsonConverter a = getJsonConverter(type);
+		JsonConverter a = getCachedConverter(type);
 		return a.toJson(o);
 	}
 
-	public JsonConverter getJsonConverter(Class<?> type) {
+	private JsonConverter getCachedConverter(Class<?> type) {
 		try {
 			if (!cache.containsKey(type)) {
-				cache.put(type, getConverter(type));
+				cache.put(type, generateConverter(type));
 			}
 			return cache.get(type);
 		} catch (Exception e) {
@@ -48,7 +45,7 @@ public class Jitson {
 		}
 	}
 
-	private JsonConverter getConverter(Class<?> cls)
+	private JsonConverter generateConverter(Class<?> cls)
 			throws CannotCompileException, NotFoundException, InstantiationException, IllegalAccessException {
 
 		// new class with a random name, as this name is not needed in any way
@@ -77,14 +74,5 @@ public class Jitson {
 
         System.out.println(sb.toString());
         return sb.toString();
-	}
-
-	private String buildFieldValue(Field field, Object result) {
-		if (result == null) {
-			return JsonSyntaxBuilder.jsonNullValue();
-		}
-
-		return JsonStringifyFactory.factory(field)
-				.apply(result);
 	}
 }

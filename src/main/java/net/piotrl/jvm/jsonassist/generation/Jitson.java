@@ -1,8 +1,10 @@
 package net.piotrl.jvm.jsonassist.generation;
 
 import javassist.*;
+import net.piotrl.jvm.jsonassist.BeanFieldUtils;
 import net.piotrl.jvm.jsonassist.JsonStringifyFactory;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,7 +68,7 @@ public class Jitson {
 	// actual JSON producing code is written here!
 	private String getConverterMethodBody(Class<?> cls) {
 		StringBuilder sb = new StringBuilder("public String toJson(")
-                .append(cls.getName())
+                .append(BeanFieldUtils.isCollection(cls) ? Collection.class.getName() : cls.getName())
                 .append(" o) {")
                 .append("return ")
                 .append(JsonStringifyFactory.factory(cls).apply("o"))

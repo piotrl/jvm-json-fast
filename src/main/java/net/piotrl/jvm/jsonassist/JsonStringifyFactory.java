@@ -15,9 +15,9 @@ public enum JsonStringifyFactory {
         if (BeanFieldUtils.isObject(clazz)) {
             return getter -> nullSafe(getter, __ -> new JsonObjectSerializer().serialize(clazz, getter));
         }
-//        if (BeanFieldUtils.isCollection(field)) {
-//            return object -> nullSafe((Collection) object, new JsonArraySerializer()::serialize);
-//        }
+        if (BeanFieldUtils.isCollection(clazz)) {
+            return getter -> nullSafe(getter, new JsonArraySerializer()::serialize);
+        }
         return Object::toString;
     }
 

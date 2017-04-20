@@ -122,7 +122,7 @@ public class JitsonTest extends TestCase {
         RecursiveObject r1 = new RecursiveObject();
         r1.setId(1);
         RecursiveObject r2 = new RecursiveObject();
-        r1.setId(2);
+        r2.setId(2);
         r1.setChild(r2);
 
         // act

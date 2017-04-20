@@ -37,25 +37,25 @@ public class Jitson {
 	}
 
 	private JsonConverter getCachedConverter(Class<?> type) {
-		try {
-			if (!cache.containsKey(type)) {
-				cache.put(type, generateConverter(type));
-			}
+		if (cache.containsKey(type)) {
 			return cache.get(type);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
 		}
+		try {
+			cache.put(type, generateConverter(type));
+		} catch (Exception e) {
+			throw new RuntimeException("Generate Converter general exception | Type: " + type.getName(), e);
+		}
+
+		return cache.get(type);
 	}
 
-	private JsonConverter generateConverter(Class<?> cls)
-			throws CannotCompileException, NotFoundException, InstantiationException, IllegalAccessException {
+	private JsonConverter generateConverter(Class<?> cls) throws NotFoundException, CannotCompileException, IllegalAccessException, InstantiationException {
 
 		// new class with a random name, as this name is not needed in any way
 		CtClass converterClass = pool.makeClass(UUID.randomUUID().toString());
 
-		converterClass.addMethod(CtNewMethod.make(getConverterMethodBody(cls), converterClass));
-		converterClass.addMethod(CtNewMethod
-				.make("public String toJson(Object o){return toJson((" + cls.getName() + ")o);}", converterClass));
+		makeMethod(converterMethodBody(cls), converterClass);
+		makeMethod(wrapperMethodBody(cls), converterClass);
 		converterClass.setInterfaces(new CtClass[] { pool.get("net.piotrl.jvm.jsonassist.generation.JsonConverter") });
 
 		JsonConverter result = (JsonConverter) pool.toClass(converterClass).newInstance();
@@ -65,15 +65,31 @@ public class Jitson {
 		return result;
 	}
 
+	private void makeMethod(String src, CtClass declaring) {
+		try {
+			declaring.addMethod(CtNewMethod.make(src, declaring));
+		} catch (CannotCompileException e) {
+			throw new RuntimeException("Make method: \n" + src, e);
+		}
+	}
+
+	private String wrapperMethodBody(Class<?> cls) {
+		String wrapper =  "public String toJson(Object o){return toJson((" + className(cls) + ")o);}";
+		return wrapper;
+	}
+
 	// actual JSON producing code is written here!
-	private String getConverterMethodBody(Class<?> cls) {
+	private String converterMethodBody(Class<?> cls) {
 		StringBuilder sb = new StringBuilder("public String toJson(")
-                .append(BeanFieldUtils.isCollection(cls) ? Collection.class.getName() : cls.getName())
+                .append(className(cls))
                 .append(" o) {\n ")
                 .append(JsonFactory.factory(cls).apply("o"))
                 .append("; \n}");
 
-        System.out.println(sb.toString());
         return sb.toString();
+	}
+
+	private String className(Class<?> cls) {
+		return BeanFieldUtils.isCollection(cls) ? Collection.class.getName() : cls.getCanonicalName();
 	}
 }

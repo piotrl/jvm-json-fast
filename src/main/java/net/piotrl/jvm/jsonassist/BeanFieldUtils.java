@@ -16,7 +16,9 @@ public enum BeanFieldUtils {
         try {
             return new PropertyDescriptor(field.getName(), cls);
         } catch (IntrospectionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(
+                    "Cannot build getter | Field: " + field.getName() + " | Class: " + cls.getName(),
+                    e);
         }
     }
 

@@ -31,7 +31,7 @@ public enum JsonFactory {
             return JsonSyntaxBuilder::jsonStringValue;
         }
         if (BeanFieldUtils.isObject(clazz)) {
-            return getter -> nullSafe(getter, __ -> new JsonObjectSerializer().serialize(clazz, getter));
+            return getter -> nullSafe(getter, __ -> new JsonObjectSerializer().serialize(getter));
         }
         if (BeanFieldUtils.isCollection(clazz)) {
             return getter -> nullSafe(getter, JsonFactory::newJitson);

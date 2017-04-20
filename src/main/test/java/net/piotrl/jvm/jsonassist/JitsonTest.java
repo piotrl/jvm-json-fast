@@ -5,6 +5,7 @@ import net.piotrl.jvm.jsonassist.generation.Jitson;
 import net.piotrl.jvm.jsonassist.mock.CollectionPrimitives;
 import net.piotrl.jvm.jsonassist.mock.NestedObject;
 import net.piotrl.jvm.jsonassist.mock.PlainPrimitives;
+import net.piotrl.jvm.jsonassist.mock.RecursiveObject;
 
 import java.util.Arrays;
 import java.util.List;
@@ -112,6 +113,24 @@ public class JitsonTest extends TestCase {
         // assert
         assertThat(json).isEqualTo(
                 "[{number: 1, longNumber: 2, string: \"First\", active: true}, {number: 3, longNumber: 4, string: \"Second\", active: true}]"
+        );
+    }
+
+    public void testRecursiveNestedObjects() throws Exception {
+        // arrange
+        Jitson jsonSerializer = new Jitson();
+        RecursiveObject r1 = new RecursiveObject();
+        r1.setId(1);
+        RecursiveObject r2 = new RecursiveObject();
+        r1.setId(2);
+        r1.setChild(r2);
+
+        // act
+        String json = jsonSerializer.toJson(r1);
+
+        // assert
+        assertThat(json).isEqualTo(
+                "{id: 1, child: {id: 2, child: null}}"
         );
     }
 

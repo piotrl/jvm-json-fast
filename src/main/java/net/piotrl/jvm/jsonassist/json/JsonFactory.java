@@ -21,7 +21,7 @@ public enum JsonFactory {
         if (BeanFieldUtils.isCollection(clazz)) {
             return new JsonArraySerializer()::serializeMethod;
         }
-        return getter -> "return Objects.toString(" + getter + ")";
+        return getter -> "return java.util.Objects.toString(" + getter + ")";
     }
 
     // Second and more level to build JSON partial objects (with nullChecks)

@@ -43,7 +43,7 @@ public class Jitson {
 		try {
 			cache.put(type, generateConverter(type));
 		} catch (Exception e) {
-			throw new RuntimeException("Generate Converter general exception | Type: " + type.getName(), e);
+			throw new RuntimeException("Generate Converter general exception | Type: " + className(type), e);
 		}
 
 		return cache.get(type);
@@ -69,24 +69,21 @@ public class Jitson {
 		try {
 			declaring.addMethod(CtNewMethod.make(src, declaring));
 		} catch (CannotCompileException e) {
-			throw new RuntimeException("Make method: \n" + src, e);
+			throw new RuntimeException("Cannot compile method: \n" + src, e);
 		}
 	}
 
 	private String wrapperMethodBody(Class<?> cls) {
-		String wrapper =  "public String toJson(Object o){return toJson((" + className(cls) + ")o);}";
-		return wrapper;
+		return "public String toJson(Object o){return toJson((" + className(cls) + ")o);}";
 	}
 
 	// actual JSON producing code is written here!
 	private String converterMethodBody(Class<?> cls) {
-		StringBuilder sb = new StringBuilder("public String toJson(")
-                .append(className(cls))
-                .append(" o) {\n ")
-                .append(JsonFactory.factory(cls).apply("o"))
-                .append("; \n}");
-
-        return sb.toString();
+		return "public String toJson(" +
+				className(cls) +
+				" o) {\n" +
+				JsonFactory.factory(cls).apply("o") +
+				"; \n}";
 	}
 
 	private String className(Class<?> cls) {

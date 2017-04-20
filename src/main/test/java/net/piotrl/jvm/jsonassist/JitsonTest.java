@@ -39,6 +39,18 @@ public class JitsonTest extends TestCase {
         );
     }
 
+    public String toJson(net.piotrl.jvm.jsonassist.mock.CollectionPrimitives o) {
+        return "{" + "list: " + (o.getList() != null ? new net.piotrl.jvm.jsonassist.generation.Jitson().toJson(o.getList()) : null) + "}";
+    }
+
+    public String toJson(java.util.Collection o) {
+        List<String> objects = new java.util.ArrayList(o.size());
+        for (Object object : o) {
+            objects.add(new net.piotrl.jvm.jsonassist.generation.Jitson().toJson(object));
+        }
+        return "[" + String.join(",", objects) + "]";
+    }
+
     public void testNestedObject() throws Exception {
         // arrange
         Jitson jsonSerializer = new Jitson();
